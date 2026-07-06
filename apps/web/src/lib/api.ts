@@ -5,9 +5,9 @@ import type {
   ReportResponse,
 } from "@caselens/shared";
 
-// All requests go to same-origin /api, which Vite proxies to the gateway in dev
-// and nginx routes in production.
-const BASE = "/api";
+// Requests go to same-origin root routes. In dev, Vite proxies them to the
+// gateway; in production the gateway serves this app, so they're same-origin.
+const BASE = "";
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`);

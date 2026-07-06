@@ -9,3 +9,6 @@ __pycache__/
 .DS_Store
 pnpm-debug.log*
 coverage/
+
+# TS build info
+*.tsbuildinfo
