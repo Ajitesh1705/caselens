@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* Self-hosted fonts (work offline / in Docker) */
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+
+/* ---- Design tokens: "CaseLens Situation Room" ---- */
+@theme {
+  --color-ink: #0a0e14;
+  --color-panel: #10151e;
+  --color-panel-2: #0c1119;
+  --color-line: #1e2a38;
+  --color-line-bright: #2b3b4e;
+  --color-text: #e6edf3;
+  --color-muted: #7e8b99;
+  --color-signal: #e8a33d;
+  --color-signal-dim: #8a6320;
+
+  /* Entity taxonomy — one color per type, used everywhere */
+  --color-ent-person: #6e9bf4;
+  --color-ent-phone: #3fbfa8;
+  --color-ent-account: #e8a33d;
+  --color-ent-organization: #e06666;
+  --color-ent-email: #8dbf6a;
+  --color-ent-location: #b98be0;
+  --color-ent-device: #9aa6b2;
+
+  --font-display: "Space Grotesk Variable", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  /* faint surveillance grid, used with restraint */
+  background-image:
+    linear-gradient(var(--color-panel-2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-panel-2) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
+}
+
+/* utility: uppercase mono classification-marking label */
+.eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.65rem;
+  color: var(--color-muted);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* thin scrollbars to match the console feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-bright);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 1px;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(232, 163, 61, 0);
+  }
+}
+.live-dot {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+@keyframes feed-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.feed-in {
+  animation: feed-in 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot,
+  .feed-in {
+    animation: none;
+  }
+}
