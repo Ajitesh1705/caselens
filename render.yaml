@@ -1,0 +1,46 @@
+# CaseLens — Render Blueprint. Two always-on Docker services:
+#   caselens      gateway that also serves the web console (REST + WebSocket)
+#   caselens-ai   FastAPI extraction / RAG / report service
+# Deploy: push to GitHub, then Render → New → Blueprint → pick this repo.
+# See DEPLOY.md for the full walkthrough.
+
+services:
+  # ---- Python AI service ----
+  - type: web
+    name: caselens-ai
+    runtime: docker
+    dockerfilePath: services/ai/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Set your key in the Render dashboard (marked secret; not stored in git).
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+
+  # ---- Gateway + web console ----
+  - type: web
+    name: caselens
+    runtime: docker
+    dockerfilePath: apps/gateway/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Runs the demo without Mongo/ES; re-seeds the Meridian case on boot.
+      - key: DEGRADE_GRACEFULLY
+        value: "true"
+      # Shared secret for the webhook demo. Change it and keep it in sync with
+      # the curl you run. (Low-sensitivity: it only gates the demo endpoint.)
+      - key: WEBHOOK_SECRET
+        value: caselens-demo-secret
+      # Reach the AI service by its Render hostname; the gateway adds https://.
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: caselens-ai
+          property: host

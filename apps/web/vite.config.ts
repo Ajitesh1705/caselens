@@ -7,8 +7,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      // Proxy API + socket to the gateway in dev so the app uses same-origin.
-      "/api": { target: "http://localhost:4000", changeOrigin: true, rewrite: (p) => p.replace(/^\/api/, "") },
+      // Proxy the gateway's routes in dev so the app is effectively same-origin
+      // (mirrors production, where the gateway serves this app).
+      "/cases": { target: "http://localhost:4000", changeOrigin: true },
+      "/webhooks": { target: "http://localhost:4000", changeOrigin: true },
+      "/health": { target: "http://localhost:4000", changeOrigin: true },
       "/socket.io": { target: "http://localhost:4000", ws: true },
     },
   },
