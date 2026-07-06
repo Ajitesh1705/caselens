@@ -11,16 +11,16 @@ export interface EntityStyle {
 }
 
 const STYLES: Record<EntityType, EntityStyle> = {
-  person: { color: "#6e9bf4", glyph: "◆", label: "Person" },
-  phone: { color: "#3fbfa8", glyph: "☎", label: "Phone" },
-  account: { color: "#e8a33d", glyph: "▤", label: "Account" },
-  organization: { color: "#e06666", glyph: "⬢", label: "Organization" },
-  email: { color: "#8dbf6a", glyph: "✉", label: "Email" },
-  location: { color: "#b98be0", glyph: "◈", label: "Location" },
-  device: { color: "#9aa6b2", glyph: "▣", label: "Device" },
+  person: { color: "#2f6fe0", glyph: "◆", label: "Person" },
+  phone: { color: "#0e8c7f", glyph: "☎", label: "Phone" },
+  account: { color: "#b4741a", glyph: "▤", label: "Account" },
+  organization: { color: "#c23b3b", glyph: "⬢", label: "Organization" },
+  email: { color: "#4e8a34", glyph: "✉", label: "Email" },
+  location: { color: "#8a4ec0", glyph: "◈", label: "Location" },
+  device: { color: "#5f6b78", glyph: "▣", label: "Device" },
 };
 
-const FALLBACK: EntityStyle = { color: "#9aa6b2", glyph: "•", label: "Entity" };
+const FALLBACK: EntityStyle = { color: "#5f6b78", glyph: "•", label: "Entity" };
 
 export function entityStyle(type: string): EntityStyle {
   return STYLES[type as EntityType] ?? FALLBACK;

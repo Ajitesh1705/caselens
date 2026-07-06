@@ -2,10 +2,12 @@
 // data is synthetic and fictional. Encodes truth, not decoration.
 export function ClassificationBanner() {
   return (
-    <div className="flex items-center justify-center gap-3 border-b border-signal-dim bg-signal-dim/15 py-1">
+    <div className="evidence-tape flex items-center justify-center gap-2 border-b border-signal-dim py-1">
+      <span className="text-signal" aria-hidden>◆</span>
       <span className="eyebrow text-signal">
         Confidential // Synthetic Data // Fictional Case
       </span>
+      <span className="text-signal" aria-hidden>◆</span>
     </div>
   );
 }

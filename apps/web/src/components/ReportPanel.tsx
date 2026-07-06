@@ -45,8 +45,14 @@ export function ReportPanel({ caseId, caseTitle }: { caseId: string; caseTitle: 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         {gen.isError && <p className="text-xs text-ent-organization">Failed to generate report.</p>}
         {markdown ? (
-          <div className="prose-invert space-y-2 text-xs leading-relaxed text-text/90 [&_code]:mono [&_h1]:mb-2 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-text [&_h2]:mt-3 [&_h2]:text-signal [&_h2]:text-sm [&_li]:ml-4 [&_li]:list-disc">
-            <ReactMarkdown>{markdown}</ReactMarkdown>
+          <div className="rounded-md border border-l-2 border-l-signal bg-panel-2/60 shadow-sm">
+            <div className="flex items-center gap-1.5 border-b border-line/60 px-3 py-1.5">
+              <span className="text-signal" aria-hidden>◆</span>
+              <span className="serif text-xs italic text-muted">Generated analysis</span>
+            </div>
+            <div className="space-y-2 px-3 py-3 text-xs leading-relaxed text-text/90 [&_code]:mono [&_code]:rounded-sm [&_code]:bg-panel [&_code]:px-1 [&_code]:text-signal [&_h1]:serif [&_h1]:mb-2 [&_h1]:text-base [&_h1]:font-semibold [&_h1]:text-text [&_h2]:serif [&_h2]:mt-3 [&_h2]:text-sm [&_h2]:text-signal [&_li]:ml-4 [&_li]:list-disc [&_li]:marker:text-signal [&_strong]:font-semibold">
+              <ReactMarkdown>{markdown}</ReactMarkdown>
+            </div>
           </div>
         ) : (
           <p className="eyebrow">Generate a structured report: summary, key entities, chronology, and leads.</p>

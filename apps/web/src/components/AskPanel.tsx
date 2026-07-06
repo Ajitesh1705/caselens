@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import type { EvidenceCitation } from "@caselens/shared";
 import { getSocket } from "../lib/socket";
 import { useCaseStore } from "../store/useCaseStore";
+
+// Markdown styling for the AI "Analysis" card — warm/on-theme (ochre + ink).
+const MD_CLASS =
+  "space-y-1.5 [&_a]:text-signal [&_a]:underline [&_code]:mono [&_code]:rounded-sm [&_code]:bg-panel [&_code]:px-1 [&_code]:text-signal [&_h1]:serif [&_h1]:text-sm [&_h1]:font-semibold [&_h1]:text-text [&_h2]:serif [&_h2]:mt-2 [&_h2]:text-signal [&_li]:ml-4 [&_li]:list-disc [&_li]:marker:text-signal [&_p]:leading-relaxed [&_strong]:font-semibold [&_ul]:space-y-0.5";
 
 interface Msg {
   role: "user" | "assistant";
@@ -15,28 +20,64 @@ const SUGGESTIONS = [
   "Who transacted on 2026-03-04?",
 ];
 
-// Ask-the-Case: questions stream token-by-token over the same WebSocket, then
-// resolve with clickable evidence citations.
+const chatKey = (caseId: string) => `caselens.chat.${caseId}`;
+
+function loadChat(caseId: string): Msg[] {
+  try {
+    const raw = localStorage.getItem(chatKey(caseId));
+    if (!raw) return [];
+    // Never restore a stuck "streaming" flag from a mid-stream reload.
+    return (JSON.parse(raw) as Msg[]).map((m) => ({ ...m, streaming: false }));
+  } catch {
+    return [];
+  }
+}
+
+function saveChat(caseId: string, msgs: Msg[]) {
+  try {
+    if (msgs.length === 0) localStorage.removeItem(chatKey(caseId));
+    else localStorage.setItem(chatKey(caseId), JSON.stringify(msgs));
+  } catch {
+    /* ignore quota / private-mode errors */
+  }
+}
+
+// Ask-the-Case: questions stream token-by-token over the WebSocket, resolve with
+// clickable citations. Conversations persist per case in localStorage.
 export function AskPanel({ caseId }: { caseId: string }) {
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [prevCase, setPrevCase] = useState(caseId);
+  const [messages, setMessages] = useState<Msg[]>(() => loadChat(caseId));
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const setTab = useCaseStore((s) => s.setTab);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Reload the conversation when the active case changes (derive-from-props).
+  if (caseId !== prevCase) {
+    setPrevCase(caseId);
+    setMessages(loadChat(caseId));
+    setBusy(false);
+  }
+
+  // Persist once the tail message is settled (not mid-stream).
+  useEffect(() => {
+    if (messages.at(-1)?.streaming) return;
+    saveChat(caseId, messages);
+  }, [caseId, messages]);
+
   useEffect(() => {
     const socket = getSocket();
     const onToken = ({ token }: { token: string }) => {
       setMessages((m) => {
-        const last = m[m.length - 1];
-        if (!last || last.role !== "assistant") return m;
+        const last = m.at(-1);
+        if (last?.role !== "assistant") return m;
         return [...m.slice(0, -1), { ...last, text: last.text + token }];
       });
     };
     const onDone = ({ citations }: { answer: string; citations: EvidenceCitation[] }) => {
       setMessages((m) => {
-        const last = m[m.length - 1];
-        if (!last || last.role !== "assistant") return m;
+        const last = m.at(-1);
+        if (last?.role !== "assistant") return m;
         return [...m.slice(0, -1), { ...last, citations, streaming: false }];
       });
       setBusy(false);
@@ -72,11 +113,27 @@ export function AskPanel({ caseId }: { caseId: string }) {
     getSocket().emit("chat:ask", { caseId, question: q });
   }
 
+  function clearChat() {
+    setMessages([]);
+    saveChat(caseId, []);
+  }
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="border-b px-3 py-2">
+      <div className="flex items-center justify-between border-b px-3 py-2">
         <span className="eyebrow">Ask the Case</span>
+        {messages.length > 0 && (
+          <button
+            type="button"
+            onClick={clearChat}
+            className="mono text-[10px] uppercase tracking-wider text-muted hover:text-signal"
+            title="Clear conversation"
+          >
+            ✕ Clear
+          </button>
+        )}
       </div>
+
       <div ref={scrollRef} className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3">
         {messages.length === 0 && (
           <div className="space-y-2">
@@ -93,34 +150,56 @@ export function AskPanel({ caseId }: { caseId: string }) {
             ))}
           </div>
         )}
-        {messages.map((m, i) => (
-          <div key={i} className={m.role === "user" ? "text-right" : ""}>
-            <div
-              className={`inline-block max-w-[90%] whitespace-pre-wrap rounded-sm border px-2.5 py-1.5 text-xs leading-relaxed ${
-                m.role === "user" ? "bg-signal/10 text-text" : "bg-panel-2 text-text/90"
-              }`}
-            >
-              {m.text || (m.streaming ? "…" : "")}
-              {m.streaming && <span className="ml-0.5 animate-pulse">▊</span>}
-            </div>
-            {m.citations && m.citations.length > 0 && (
-              <div className="mt-1.5 flex flex-wrap gap-1">
-                {m.citations.map((c) => (
-                  <button
-                    key={c.evidenceId}
-                    type="button"
-                    onClick={() => setTab("search")}
-                    title={c.snippet}
-                    className="mono rounded-sm border px-1.5 py-0.5 text-[10px] text-signal hover:bg-signal/10"
-                  >
-                    ▤ {c.filename}
-                  </button>
-                ))}
+
+        {messages.map((m, i) =>
+          m.role === "user" ? (
+            <div key={i} className="text-right">
+              <div className="inline-block max-w-[92%] whitespace-pre-wrap rounded-sm border border-signal/40 bg-signal/10 px-2.5 py-1.5 text-left text-xs leading-relaxed text-text">
+                {m.text}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          ) : (
+            // AI "Analysis" card — warm, on-theme: recessed cream, ochre left rule,
+            // serif italic label. Distinct from evidence, harmonious with it.
+            <div
+              key={i}
+              className="rounded-md border border-l-2 border-l-signal bg-panel-2/60 shadow-sm"
+            >
+              <div className="flex items-center gap-1.5 border-b border-line/60 px-2.5 py-1.5">
+                <span className="text-signal" aria-hidden>
+                  ◆
+                </span>
+                <span className="serif text-xs italic text-muted">Analysis</span>
+                {m.streaming && (
+                  <span className="mono text-[10px] text-muted">· reasoning</span>
+                )}
+              </div>
+              <div className="px-2.5 py-2 text-xs text-text/90">
+                <div className={MD_CLASS}>
+                  <ReactMarkdown>{m.text || (m.streaming ? "…" : "")}</ReactMarkdown>
+                  {m.streaming && <span className="ml-0.5 animate-pulse text-signal">▊</span>}
+                </div>
+                {m.citations && m.citations.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1 border-t border-line/60 pt-2">
+                    {m.citations.map((c) => (
+                      <button
+                        key={c.evidenceId}
+                        type="button"
+                        onClick={() => setTab("search")}
+                        title={c.snippet}
+                        className="mono rounded-sm border border-signal/40 px-1.5 py-0.5 text-[10px] text-signal hover:bg-signal/10"
+                      >
+                        ▤ {c.filename}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ),
+        )}
       </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();

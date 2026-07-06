@@ -7,12 +7,17 @@ from __future__ import annotations
 import json
 from collections.abc import Iterator
 
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from dotenv import load_dotenv
 
-from . import llm
-from .extract import heuristic_extract
-from .schemas import (
+# Load services/ai/.env before importing modules that read env at import time.
+load_dotenv()
+
+from fastapi import FastAPI  # noqa: E402
+from fastapi.responses import StreamingResponse  # noqa: E402
+
+from . import llm  # noqa: E402
+from .extract import heuristic_extract  # noqa: E402
+from .schemas import (  # noqa: E402
     AskRequest,
     AskResult,
     ExtractionRequest,
