@@ -1,0 +1,8 @@
+2026-03-10 08:05 Rohit Mehta messaged Victor Almeida to prepare a new channel
+2026-03-10 08:12 Victor Almeida confirmed Global Trust account GB90GLTB20051234567890
+2026-03-10 09:30 Nadia Farouk called Victor Almeida +44 7700 900641 duration 210s
+2026-03-10 11:45 Victor Almeida transferred USD 320,000 to account GB90GLTB20051234567890
+2026-03-11 14:20 Nadia Farouk moved USD 150,000 from GB90GLTB20051234567890 to KW81CBKU0000000000001234560101
+2026-03-11 15:02 Rohit Mehta contacted Nadia Farouk +44 7700 900641
+2026-03-12 09:00 Victor Almeida emailed victor.almeida@globaltrust.example
+2026-03-12 18:40 Nadia Farouk associated with Meridian Holdings
