@@ -26,8 +26,8 @@ export default function App() {
       <ClassificationBanner />
       <CommandBar cases={cases ?? []} caseId={caseId} onSelectCase={setCaseId} />
 
-      <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <section className="flex min-h-0 flex-1 flex-col">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+        <section className="flex min-h-0 min-w-0 flex-1 flex-col">
           <div className="relative min-h-[340px] flex-1">
             {graph ? <LinkGraph graph={graph} /> : <Loading />}
             <GraphLegend />
@@ -36,7 +36,7 @@ export default function App() {
           {graph && <Timeline graph={graph} />}
         </section>
 
-        <div className="h-[520px] w-full shrink-0 lg:h-auto lg:w-[360px]">
+        <div className="h-[520px] w-full shrink-0 lg:h-auto lg:w-auto">
           {caseId && graph && <RightRail caseId={caseId} graph={graph} />}
         </div>
       </main>

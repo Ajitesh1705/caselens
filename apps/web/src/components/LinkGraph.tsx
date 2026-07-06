@@ -102,8 +102,8 @@ export function LinkGraph({ graph }: { graph: CaseGraphResponse }) {
           const src = typeof l.source === "object" ? (l.source as GNode).id : l.source;
           const tgt = typeof l.target === "object" ? (l.target as GNode).id : l.target;
           if (neighborIds && (neighborIds.has(src as string) && neighborIds.has(tgt as string)))
-            return "rgba(232,163,61,0.55)";
-          return "rgba(120,140,160,0.18)";
+            return "rgba(176,116,26,0.7)";
+          return "rgba(80,66,42,0.22)";
         }}
         linkWidth={(l) => {
           const src = typeof l.source === "object" ? (l.source as GNode).id : l.source;
@@ -127,7 +127,7 @@ export function LinkGraph({ graph }: { graph: CaseGraphResponse }) {
               const p = age / 2000;
               ctx.beginPath();
               ctx.arc(n.x, n.y, r + p * 10, 0, Math.PI * 2);
-              ctx.strokeStyle = `rgba(232,163,61,${0.5 * (1 - p)})`;
+              ctx.strokeStyle = `rgba(176,116,26,${0.6 * (1 - p)})`;
               ctx.lineWidth = 1.5 / scale;
               ctx.stroke();
             }
@@ -139,7 +139,7 @@ export function LinkGraph({ graph }: { graph: CaseGraphResponse }) {
           ctx.fillStyle = s.color;
           ctx.fill();
           if (n.id === selectedEntityId) {
-            ctx.strokeStyle = "#fff";
+            ctx.strokeStyle = "#2a2620";
             ctx.lineWidth = 1.5 / scale;
             ctx.stroke();
           }
@@ -147,7 +147,7 @@ export function LinkGraph({ graph }: { graph: CaseGraphResponse }) {
           // label
           if (scale > 1.3 || n.id === selectedEntityId || (neighborIds?.has(n.id) && !dimmed)) {
             ctx.font = `${10 / scale}px "IBM Plex Mono", monospace`;
-            ctx.fillStyle = dimmed ? "rgba(230,237,243,0.3)" : "#c9d4de";
+            ctx.fillStyle = dimmed ? "rgba(42,38,32,0.35)" : "#3a352c";
             ctx.textAlign = "center";
             ctx.fillText(n.label.slice(0, 22), n.x, n.y + r + 9 / scale);
           }

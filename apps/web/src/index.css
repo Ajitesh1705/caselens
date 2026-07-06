@@ -1,33 +1,37 @@
 @import "tailwindcss";
 
 /* Self-hosted fonts (work offline / in Docker) */
+@import "@fontsource-variable/fraunces";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
 @import "@fontsource/ibm-plex-mono/600.css";
 
-/* ---- Design tokens: "CaseLens Situation Room" ---- */
+/* ---- Design tokens: "CaseLens Case File" (warm paper / dossier) ----
+   Token names read dark-first for historical reasons; values are the light
+   paper palette. --color-ink = paper background, --color-text = ink. */
 @theme {
-  --color-ink: #0a0e14;
-  --color-panel: #10151e;
-  --color-panel-2: #0c1119;
-  --color-line: #1e2a38;
-  --color-line-bright: #2b3b4e;
-  --color-text: #e6edf3;
-  --color-muted: #7e8b99;
-  --color-signal: #e8a33d;
-  --color-signal-dim: #8a6320;
+  --color-ink: #efe9dc;        /* manila paper background */
+  --color-panel: #fbf8f1;      /* card / panel surface */
+  --color-panel-2: #f0e9d9;    /* inset surfaces / inputs */
+  --color-line: #d9cdb4;       /* warm tan hairline */
+  --color-line-bright: #c3b491;
+  --color-text: #2a2620;       /* dark warm ink */
+  --color-muted: #877c66;      /* muted brown-grey */
+  --color-signal: #b4741a;     /* ochre accent (readable on paper) */
+  --color-signal-dim: #e7d6b2; /* light amber tint for banners */
 
-  /* Entity taxonomy — one color per type, used everywhere */
-  --color-ent-person: #6e9bf4;
-  --color-ent-phone: #3fbfa8;
-  --color-ent-account: #e8a33d;
-  --color-ent-organization: #e06666;
-  --color-ent-email: #8dbf6a;
-  --color-ent-location: #b98be0;
-  --color-ent-device: #9aa6b2;
+  /* Entity taxonomy — one color per type, deepened for light backgrounds */
+  --color-ent-person: #2f6fe0;
+  --color-ent-phone: #0e8c7f;
+  --color-ent-account: #b4741a;
+  --color-ent-organization: #c23b3b;
+  --color-ent-email: #4e8a34;
+  --color-ent-location: #8a4ec0;
+  --color-ent-device: #5f6b78;
 
   --font-display: "Space Grotesk Variable", system-ui, sans-serif;
+  --font-serif: "Fraunces Variable", "Fraunces", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
@@ -47,10 +51,10 @@ body {
   color: var(--color-text);
   font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
-  /* faint surveillance grid, used with restraint */
+  /* faint ledger grid, used with restraint */
   background-image:
-    linear-gradient(var(--color-panel-2) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-panel-2) 1px, transparent 1px);
+    linear-gradient(rgba(120, 100, 70, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 100, 70, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
   background-position: -1px -1px;
 }
@@ -66,6 +70,23 @@ body {
 
 .mono {
   font-family: var(--font-mono);
+}
+
+/* Editorial serif for the brand + display headings (dossier character) */
+.serif {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+}
+
+/* Evidence-tape hazard stripes for the classification banner */
+.evidence-tape {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(180, 116, 26, 0.14) 0,
+    rgba(180, 116, 26, 0.14) 10px,
+    transparent 10px,
+    transparent 20px
+  );
 }
 
 /* thin scrollbars to match the console feel */
